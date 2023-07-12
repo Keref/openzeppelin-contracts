@@ -5,7 +5,7 @@ pragma solidity ^0.8.19;
 import {ERC20} from "../ERC20.sol";
 
 /**
- * @dev Extension of {ERC20Wrapper} that allows token holders to vest tokens before withdraw
+ * @dev Extension of {ERC20} that allows token holders to vest tokens before withdraw
  * Useful in combination with ERC20Wrapper for locking up tokens
  * Default vesting schedule is linear
  * A user can have multiple vesting schedules
