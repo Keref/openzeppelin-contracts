@@ -2,13 +2,15 @@
 pragma solidity ^0.8.19;
 
 
+import {ERC20} from "../ERC20.sol";
+
 /**
- * @dev Extension of {ERC20} that allows token holders to vest tokens before withdraw
+ * @dev Extension of {ERC20Wrapper} that allows token holders to vest tokens before withdraw
  * Useful in combination with ERC20Wrapper for locking up tokens
  * Default vesting schedule is linear
  * A user can have multiple vesting schedules
  */
-abstract contract ERC20Vesting {
+abstract contract ERC20Vesting is ERC20 {
   /// Event: Vesting
   event Vested(address indexed user, uint256 amount);
   /// Event: update vesting duration
@@ -85,6 +87,16 @@ abstract contract ERC20Vesting {
   
   //////// VESTING LOGIC
   
+  /// @notice Vest locked token
+  /// @param vestingAmount Amount of tokens to vest
+  function vest(uint vestingAmount) public virtual {
+    address sender = _msgSender();
+    require(balanceOf(sender) >= vestingAmount + vestingBalanceOf(sender), "ERC20Vesting: Insufficient Balance to Vest");
+    uint64 data;
+    _vest(sender, vestingAmount, data);
+  }
+  
+  
   /// @notice Vesting starts the unlock countdown for a user's subset of tokens
   /// @dev Caller should make sure that the user has enough funds to vest
   function _vest(address user, uint256 vestingAmount, uint64 data) internal {
@@ -147,5 +159,8 @@ abstract contract ERC20Vesting {
     received = (vestedAmount * (block.timestamp - startTime)) / _vestingDuration;
     remaining = vestedAmount - received;
   }
+  
+  
+  //////// OVERRIDES
   
 }
