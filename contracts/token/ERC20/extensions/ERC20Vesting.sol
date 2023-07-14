@@ -88,7 +88,7 @@ abstract contract ERC20Vesting is ERC20 {
   
   
   /// @notice Returns vesting Id 
-  function getVestingScheduleId(address user, uint256 userVestingId) internal view returns (uint256){
+  function getVestingScheduleId(address user, uint256 userVestingId) public view returns (uint256){
     require(userVestingId < getVestingLength(user), "ERC20Vesting: Invalid userVestingId");
     return _userVestingSchedules[user][userVestingId];
   }
@@ -127,7 +127,7 @@ abstract contract ERC20Vesting is ERC20 {
   function _vest(address user, uint256 vestingAmount, uint64 startTime) internal returns (uint vestingId) {
     require(balanceOf(user) >= vestingAmount + vestingBalanceOf(user), "ERC20Vesting: Insufficient Balance");
     require(vestingAmount > 0 || vestingAmount < type(uint224).max, "ERC20Vesting: Invalid Amount");
-    require(startTime + _vestingDuration < block.timestamp, "ERC20Vesting: Invalid Time");
+    require(startTime + _vestingDuration > block.timestamp, "ERC20Vesting: Invalid Time");
     _vestingSchedules.push(VestingSchedule(uint192(vestingAmount), startTime));
     vestingId = _vestingSchedules.length - 1;
     _userVestingSchedules[user].push(_vestingSchedules.length-1);
