@@ -185,5 +185,12 @@ abstract contract ERC20Vesting is ERC20 {
     unlockedAmount = (vestedAmount * (block.timestamp - startTime)) / _vestingDuration;
     lockedAmount = vestedAmount - unlockedAmount;
   }
+ 
+  //////// OVERRIDES
+  
+  // Transfer of vested tokens is forbidden by default
+  function transfer(address to, uint256 value) public virtual override returns (bool) {
+    revert("ERC20Vesting: Transfer Forbidden");
+  }
   
 }

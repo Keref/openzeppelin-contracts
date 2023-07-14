@@ -13,11 +13,7 @@ abstract contract EsGovernanceTokenMock is ERC20Votes, ERC20Wrapper, ERC20Vestin
   constructor(address token, uint64 vestingDuration) 
     ERC20Vesting(vestingDuration)
   {}
-  
-  // Transfer of escrowed tokens is forbidden
-  function transfer(address to, uint256 value) public override returns (bool) {
-    revert("EsGovernanceTokenMock: Transfer Forbidden");
-  }
+
   
   // Withdrawal: ERC20Wrapper param {value} becomes a user schedule, amount withdrawn is defined by the schedule
   function withdrawTo(address account, uint256 userVestingId) public virtual override returns (bool) {
@@ -34,6 +30,9 @@ abstract contract EsGovernanceTokenMock is ERC20Votes, ERC20Wrapper, ERC20Vestin
   }
   function decimals() public view virtual override (ERC20Wrapper, ERC20) returns (uint8) {
     return super.decimals();
+  }
+  function transfer(address to, uint256 value) public override (ERC20Vesting, ERC20) returns (bool) {
+    return super.transfer(to, value);
   }
 }
 
@@ -96,6 +95,9 @@ abstract contract VeGovernanceTokenMock is ERC20Votes, ERC20Vesting {
   function _update(address from, address to, uint256 value) internal virtual override (ERC20Votes, ERC20) {
     return super._update(from, to, value);
   }
+  function transfer(address to, uint256 value) public override (ERC20Vesting, ERC20) returns (bool) {
+    return super.transfer(to, value);
+  }
 }
 
 
@@ -104,7 +106,7 @@ abstract contract VeGovernanceTokenMock is ERC20Votes, ERC20Vesting {
  * Rewards are deposited in this contract and users can withdraw them after vesting 90d
  * Rewards can be withdrawn early, in which case there is a penalty and the non unlocked amount is burnt
  */
-abstract contract MiningRewards is ERC20Vesting {
+abstract contract VestedMiningRewardsMock is ERC20Vesting {
   IERC20 public immutable rewardToken;
   
   constructor(address rewardToken_) 
