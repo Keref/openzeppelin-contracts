@@ -72,6 +72,8 @@ abstract contract VeGovernanceTokenMock is ERC20Votes, ERC20Vesting {
     _burn(account, unlockedAmount);
     uint vestingId = getVestingScheduleId(account, userVestingId);
     SafeERC20.safeTransfer(underlying, account, vestingUnderlyingBalances[vestingId]);
+    
+    return true;
   }
   
   
